@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
   if (msg === '/ping') {
     // Quick reply – must finish in ~10 s or Telegram retries  [oai_citation:2‡core.telegram.org](https://core.telegram.org/bots/payments-stars?utm_source=chatgpt.com)
     await fetch(
-      `https://api.telegram.org/bot${process.env.TELEGRAM_TOKEN}/sendMessage`,
+      `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
