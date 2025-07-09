@@ -1,71 +1,55 @@
 // app/api/telegram/webhook/route.ts
 // Edge runtime = zero cold-start for small handlers
-export const runtime = 'edge';
+export const runtime = "edge";
 
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from "next/server";
+import {
+  TelegramAPI,
+  TIME_BUTTONS,
+  CALLBACK_MESSAGES,
+  MessageUtils,
+} from "@/app/lib/telegram";
 
 export async function POST(req: NextRequest) {
-  const update = await req.json();          // Telegram Update object
-  const msg = update.message?.text ?? '';
+  const update = await req.json();
   const callbackQuery = update.callback_query;
 
-  // Handle button callbacks
-  if (callbackQuery) {
+  // Handle button callbacks for time selection
+  if (callbackQuery && callbackQuery.data?.startsWith("time_")) {
     const chatId = callbackQuery.message.chat.id;
     const messageId = callbackQuery.message.message_id;
-    const data = callbackQuery.data;
+    const selectedTime = callbackQuery.data.replace("time_", "");
+    const user = callbackQuery.from;
+    const userName = user.username || user.first_name || "Unknown";
 
-    // Answer the callback query to remove loading state
-    await fetch(
-      `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/answerCallbackQuery`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          callback_query_id: callbackQuery.id,
-          text: `You selected: ${data}`
-        })
-      }
+    // Answer the callback query
+    await TelegramAPI.answerCallbackQuery({
+      callback_query_id: callbackQuery.id,
+      text:
+        selectedTime === "not_coming"
+          ? CALLBACK_MESSAGES.NOT_COMING
+          : CALLBACK_MESSAGES.REGISTERED(selectedTime),
+    });
+
+    // Parse current message and update with new user selection
+    const currentText = callbackQuery.message.text;
+    const updatedText = MessageUtils.updateMessageWithUserSelection(
+      currentText,
+      userName,
+      selectedTime
     );
 
-    // Edit the message to show the selection
-    await fetch(
-      `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/editMessageText`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chat_id: chatId,
-          message_id: messageId,
-          text: `✅ You selected: ${data === 'true' ? 'True' : 'False'}`
-        })
-      }
-    );
+    // Update the message
+    await TelegramAPI.editMessageText({
+      chat_id: chatId,
+      message_id: messageId,
+      text: updatedText,
+      reply_markup: {
+        inline_keyboard: TIME_BUTTONS,
+      },
+    });
 
     return NextResponse.json({ ok: true });
-  }
-
-  if (msg === '/ping') {
-    // Send message with inline keyboard buttons
-    await fetch(
-      `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chat_id: update.message.chat.id,
-          text: 'Please select True or False:',
-          reply_markup: {
-            inline_keyboard: [
-              [
-                { text: 'True ✅', callback_data: 'true' },
-                { text: 'False ❌', callback_data: 'false' }
-              ]
-            ]
-          }
-        })
-      }
-    );
   }
 
   // Always ACK Telegram

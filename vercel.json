@@ -1,5 +1,11 @@
 {
-    "functions": {
-      "app/api/telegram/webhook/route.ts": { "maxDuration": 60 }
+  "functions": {
+    "app/api/telegram/webhook/route.ts": { "maxDuration": 60 }
+  },
+  "crons": [
+    {
+      "path": "/api/telegram/create-poll",
+      "schedule": "*/5 * * * *"
     }
-  }
+  ]
+}
