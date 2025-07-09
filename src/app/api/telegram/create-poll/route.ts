@@ -31,7 +31,7 @@ export async function GET() {
     console.log(`Voting message sent at ${timeString}`);
     return NextResponse.json({
       success: true,
-      message_id: result.result.message_id,
+      message_id: result.result?.message_id,
       time: timeString,
     });
   } catch (error) {

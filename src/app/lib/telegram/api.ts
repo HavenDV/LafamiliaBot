@@ -2,7 +2,13 @@
 
 export interface TelegramResponse {
   ok: boolean;
-  result?: any;
+  result?: {
+    message_id?: number;
+    poll?: {
+      id: string;
+    };
+    [key: string]: unknown;
+  };
   error_code?: number;
   description?: string;
 }
