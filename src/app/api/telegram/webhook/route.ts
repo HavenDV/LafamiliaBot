@@ -24,16 +24,7 @@ export async function POST(req: NextRequest) {
       ? `<a href="https://t.me/${user.username}">@${user.username}</a>`
       : user.first_name || "Unknown";
 
-    // Answer the callback query
-    await TelegramAPI.answerCallbackQuery({
-      callback_query_id: callbackQuery.id,
-      text:
-        selectedTime === "not_coming"
-          ? CALLBACK_MESSAGES.NOT_COMING
-          : CALLBACK_MESSAGES.REGISTERED(selectedTime),
-    });
-
-    // Parse current message and update with new user selection
+    // Prepare updated message text
     const currentText = callbackQuery.message.text;
     const updatedText = MessageUtils.updateMessageWithUserSelection(
       currentText,
@@ -41,17 +32,26 @@ export async function POST(req: NextRequest) {
       selectedTime
     );
 
-    // Update the message
-    await TelegramAPI.editMessageText({
-      chat_id: chatId,
-      message_id: messageId,
-      text: updatedText,
-      parse_mode: "HTML",
-      disable_web_page_preview: true,
-      reply_markup: {
-        inline_keyboard: TIME_BUTTONS,
-      },
-    });
+    // Run answerCallbackQuery and editMessageText concurrently
+    await Promise.all([
+      TelegramAPI.answerCallbackQuery({
+        callback_query_id: callbackQuery.id,
+        text:
+          selectedTime === "not_coming"
+            ? CALLBACK_MESSAGES.NOT_COMING
+            : CALLBACK_MESSAGES.REGISTERED(selectedTime),
+      }),
+      TelegramAPI.editMessageText({
+        chat_id: chatId,
+        message_id: messageId,
+        text: updatedText,
+        parse_mode: "HTML",
+        disable_web_page_preview: true,
+        reply_markup: {
+          inline_keyboard: TIME_BUTTONS,
+        },
+      }),
+    ]);
 
     return NextResponse.json({ ok: true });
   }
