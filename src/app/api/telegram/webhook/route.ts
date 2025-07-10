@@ -9,6 +9,7 @@ import {
   CALLBACK_MESSAGES,
   MessageUtils,
 } from "@/app/lib/telegram";
+import { OpenAIUtils } from "@/app/lib/openai";
 
 export async function POST(req: NextRequest) {
   const update = await req.json();
@@ -52,6 +53,24 @@ export async function POST(req: NextRequest) {
         },
       }),
     ]);
+
+    return NextResponse.json({ ok: true });
+  }
+
+  // Handle regular messages mentioning the bot
+  if (update.message?.text?.includes("@lafamilias_bot")) {
+    try {
+      const joke = await OpenAIUtils.generateJoke(update.message.text);
+
+      await TelegramAPI.sendMessage({
+        chat_id: update.message.chat.id,
+        text: joke,
+        reply_to_message_id: update.message.message_id,
+        disable_web_page_preview: true,
+      });
+    } catch (err) {
+      console.error("OpenAI joke generation failed", err);
+    }
 
     return NextResponse.json({ ok: true });
   }
