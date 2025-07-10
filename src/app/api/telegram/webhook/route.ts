@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
     try {
       const promptText =
         isReplyToBot && msg.reply_to_message?.text
-          ? `Сообщение бота: ${msg.reply_to_message.text}\nОтвет игрока: ${msg.text}`
+          ? `Предыдущее сообщение: ${msg.reply_to_message.text}\nОтвет игрока: ${msg.text}`
           : msg.text ?? "";
 
       const joke = await OpenAIUtils.generateJoke(promptText);
