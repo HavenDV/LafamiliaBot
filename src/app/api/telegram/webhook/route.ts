@@ -58,14 +58,20 @@ export async function POST(req: NextRequest) {
   }
 
   // Handle regular messages mentioning the bot
-  if (update.message?.text?.includes("@lafamilias_bot")) {
+  const msg = update.message;
+  const isDirectMention = msg?.text?.includes("@lafamilias_bot");
+  const isReplyToBot =
+    msg?.reply_to_message?.from?.username === "lafamilias_bot" ||
+    msg?.reply_to_message?.via_bot?.username === "lafamilias_bot";
+
+  if (msg && (isDirectMention || isReplyToBot)) {
     try {
-      const joke = await OpenAIUtils.generateJoke(update.message.text);
+      const joke = await OpenAIUtils.generateJoke(msg.text ?? "");
 
       await TelegramAPI.sendMessage({
-        chat_id: update.message.chat.id,
+        chat_id: msg.chat.id,
         text: joke,
-        reply_to_message_id: update.message.message_id,
+        reply_to_message_id: msg.message_id,
         disable_web_page_preview: true,
       });
     } catch (err) {
