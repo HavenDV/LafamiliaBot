@@ -11,7 +11,7 @@ export class MessageUtils {
    */
   static updateMessageWithUserSelection(
     currentText: string,
-    userName: string,
+    displayName: string,
     selectedTime: string
   ): string {
     // Split the message into parts
@@ -33,11 +33,13 @@ export class MessageUtils {
       baseMessageEndIndex
     );
 
+    const key = this.normalizeName(displayName);
+
     // Update or add user registration
     if (selectedTime === "not_coming") {
-      registrations.delete(userName);
+      registrations.delete(key);
     } else {
-      registrations.set(userName, selectedTime);
+      registrations.set(key, { displayName, time: selectedTime });
     }
 
     // Build the updated message
@@ -50,18 +52,25 @@ export class MessageUtils {
   private static parseExistingRegistrations(
     lines: string[],
     baseMessageEndIndex: number
-  ): Map<string, string> {
-    const registrations = new Map<string, string>();
+  ): Map<string, { displayName: string; time: string }> {
+    const registrations = new Map<
+      string,
+      { displayName: string; time: string }
+    >();
     const existingLines = lines.slice(baseMessageEndIndex + 1);
 
     // Parse existing registrations
     for (const line of existingLines) {
       if (line.trim()) {
-        // Match patterns like "TERMINATOR T4 (Время: 20:30)"
+        // Match patterns like "👤 <a href=...>@nick</a> (Время: 20:30)" or "👤 @nick (Время: 20:30)"
         const timeMatch = line.match(/^(?:👤\s*)?(.+?)\s*\(Время:\s*(.+?)\)$/);
         if (timeMatch) {
-          const [, name, time] = timeMatch;
-          registrations.set(name.trim(), time.trim());
+          const [, rawName, time] = timeMatch;
+          const key = this.normalizeName(rawName.trim());
+          registrations.set(key, {
+            displayName: rawName.trim(),
+            time: time.trim(),
+          });
         }
       }
     }
@@ -69,19 +78,33 @@ export class MessageUtils {
     return registrations;
   }
 
+  /** Normalizes a display name to a unique key (prefer username without @) */
+  private static normalizeName(name: string): string {
+    // If anchor markup: extract username part
+    const anchorMatch = name.match(/<a[^>]+\/([^"'>]+)"[^>]*>/);
+    if (anchorMatch) return anchorMatch[1].toLowerCase();
+
+    // If @mention
+    const mentionMatch = name.match(/^@([A-Za-z0-9_]+)/);
+    if (mentionMatch) return mentionMatch[1].toLowerCase();
+
+    // Fallback: strip HTML tags and return lowercase text
+    return name.replace(/<[^>]+>/g, "").toLowerCase();
+  }
+
   /**
    * Builds the updated message with user registrations
    */
   private static buildUpdatedMessage(
     baseMessage: string,
-    registrations: Map<string, string>
+    registrations: Map<string, { displayName: string; time: string }>
   ): string {
     let updatedMessage = baseMessage;
 
     if (registrations.size > 0) {
       updatedMessage += "\n";
-      for (const [name, time] of registrations.entries()) {
-        updatedMessage += `\n👤 ${name} (Время: ${time})`;
+      for (const { displayName, time } of registrations.values()) {
+        updatedMessage += `\n👤 ${displayName} (Время: ${time})`;
       }
     }
 
@@ -106,12 +129,10 @@ export class MessageUtils {
       baseMessageEndIndex
     );
 
-    return Array.from(registrations.entries()).map(
-      ([userName, selectedTime]) => ({
-        userName,
-        selectedTime,
-      })
-    );
+    return Array.from(registrations.values()).map(({ displayName, time }) => ({
+      userName: displayName,
+      selectedTime: time,
+    }));
   }
 
   /**
