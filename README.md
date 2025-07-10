@@ -104,3 +104,15 @@ Built on Next.js 15 with:
 - Users click time buttons to register for mafia games
 - Mention `@lafamilias_bot` for AI-generated jokes
 - Reply to bot messages for contextual humor responses
+
+## AI Integration
+
+The bot uses OpenAI's [GPT-4.1 Nano](https://platform.openai.com/docs/models/gpt-4.1-nano) model for humor generation with the following configuration:
+
+**Model**: `gpt-4.1-nano-2025-04-14`
+**System Prompt**: "Ты весёлый бот клуба мафии LaFamilia. Отвечай на сообщения короткой шуткой или дружеской подколкой на русском языке."
+**Parameters**:
+- `max_tokens`: 60
+- `temperature`: 0.9
+
+The bot provides contextual responses by including previous message content when users reply to bot messages, enabling more relevant humor generation.
