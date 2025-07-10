@@ -16,6 +16,7 @@ export interface TelegramResponse {
 export interface SendMessageParams {
   chat_id: string | number;
   text: string;
+  parse_mode?: string;
   reply_markup?: {
     inline_keyboard: Array<Array<{ text: string; callback_data: string }>>;
   };
@@ -25,6 +26,7 @@ export interface EditMessageParams {
   chat_id: string | number;
   message_id: number;
   text: string;
+  parse_mode?: string;
   reply_markup?: {
     inline_keyboard: Array<Array<{ text: string; callback_data: string }>>;
   };

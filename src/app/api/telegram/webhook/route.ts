@@ -20,7 +20,9 @@ export async function POST(req: NextRequest) {
     const messageId = callbackQuery.message.message_id;
     const selectedTime = callbackQuery.data.replace("time_", "");
     const user = callbackQuery.from;
-    const userName = user.username || user.first_name || "Unknown";
+    const displayName = user.username
+      ? `<a href="https://t.me/${user.username}">@${user.username}</a>`
+      : user.first_name || "Unknown";
 
     // Answer the callback query
     await TelegramAPI.answerCallbackQuery({
@@ -35,7 +37,7 @@ export async function POST(req: NextRequest) {
     const currentText = callbackQuery.message.text;
     const updatedText = MessageUtils.updateMessageWithUserSelection(
       currentText,
-      userName,
+      displayName,
       selectedTime
     );
 
@@ -44,6 +46,7 @@ export async function POST(req: NextRequest) {
       chat_id: chatId,
       message_id: messageId,
       text: updatedText,
+      parse_mode: "HTML",
       reply_markup: {
         inline_keyboard: TIME_BUTTONS,
       },

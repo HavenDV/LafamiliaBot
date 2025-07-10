@@ -15,6 +15,7 @@ export async function GET() {
     const result = await TelegramAPI.sendMessage({
       chat_id: process.env.CHAT_ID!,
       text: VOTING_MESSAGE_TEMPLATE,
+      parse_mode: "HTML",
       reply_markup: {
         inline_keyboard: TIME_BUTTONS,
       },

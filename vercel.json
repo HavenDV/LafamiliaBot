@@ -5,8 +5,7 @@
   "crons": [
     {
       "path": "/api/telegram/create-poll",
-      "schedule": "0 12 * * *",
-      "tz": "Asia/Dubai"
+      "schedule": "0 8 * * *"
     }
   ]
 }
