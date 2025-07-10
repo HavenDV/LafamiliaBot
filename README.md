@@ -10,14 +10,40 @@ A Telegram bot for the LaFamilia mafia club built with Next.js 15 and deployed o
 
 ## Setup
 
+### Getting Required Credentials
+
+#### 1. Telegram Bot Token
+
+1. Open Telegram and search for `@BotFather`
+2. Start a chat and send `/newbot`
+3. Follow the prompts to choose a name and username for your bot
+4. Copy the bot token (format: `123456789:ABC-DEF1234ghIkl-zyx57W2v1u123ew11`)
+
+#### 2. Telegram Chat ID
+
+To get the chat ID where the bot will send daily polls:
+
+1. Right-click on any message inside your target group/channel
+2. Select "Copy Link"
+3. The link will look like: `https://t.me/c/1234567890/123`
+4. Take the number after `/c/` (e.g., `1234567890`)
+5. Add `-100` prefix to get the chat ID: `-1001234567890`
+
+#### 3. OpenAI API Key
+
+1. Visit [OpenAI Platform](https://platform.openai.com/api-keys)
+2. Create an account or sign in
+3. Click "Create new secret key"
+4. Copy the API key (starts with `sk-`)
+
 ### Environment Variables
 
 Create a `.env.local` file with:
 
 ```bash
-TELEGRAM_BOT_TOKEN=your_bot_token_from_botfather
-CHAT_ID=your_telegram_chat_id
-OPENAI_API_KEY=your_openai_api_key
+TELEGRAM_BOT_TOKEN=123456789:ABC-DEF1234ghIkl-zyx57W2v1u123ew11
+CHAT_ID=-1001234567890
+OPENAI_API_KEY=sk-your-openai-api-key-here
 ```
 
 ### Development
