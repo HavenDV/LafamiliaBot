@@ -58,7 +58,7 @@ export class MessageUtils {
     for (const line of existingLines) {
       if (line.trim()) {
         // Match patterns like "TERMINATOR T4 (Время: 20:30)"
-        const timeMatch = line.match(/^(.+?)\s*\(Время:\s*(.+?)\)$/);
+        const timeMatch = line.match(/^(?:👤\s*)?(.+?)\s*\(Время:\s*(.+?)\)$/);
         if (timeMatch) {
           const [, name, time] = timeMatch;
           registrations.set(name.trim(), time.trim());
@@ -81,7 +81,7 @@ export class MessageUtils {
     if (registrations.size > 0) {
       updatedMessage += "\n";
       for (const [name, time] of registrations.entries()) {
-        updatedMessage += `\n${name} (Время: ${time})`;
+        updatedMessage += `\n👤 ${name} (Время: ${time})`;
       }
     }
 
