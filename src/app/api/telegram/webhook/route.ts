@@ -47,6 +47,7 @@ export async function POST(req: NextRequest) {
       message_id: messageId,
       text: updatedText,
       parse_mode: "HTML",
+      disable_web_page_preview: true,
       reply_markup: {
         inline_keyboard: TIME_BUTTONS,
       },

@@ -17,6 +17,7 @@ export interface SendMessageParams {
   chat_id: string | number;
   text: string;
   parse_mode?: string;
+  disable_web_page_preview?: boolean;
   reply_markup?: {
     inline_keyboard: Array<Array<{ text: string; callback_data: string }>>;
   };
@@ -27,6 +28,7 @@ export interface EditMessageParams {
   message_id: number;
   text: string;
   parse_mode?: string;
+  disable_web_page_preview?: boolean;
   reply_markup?: {
     inline_keyboard: Array<Array<{ text: string; callback_data: string }>>;
   };

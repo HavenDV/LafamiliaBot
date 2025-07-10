@@ -16,6 +16,7 @@ export async function GET() {
       chat_id: process.env.CHAT_ID!,
       text: VOTING_MESSAGE_TEMPLATE,
       parse_mode: "HTML",
+      disable_web_page_preview: true,
       reply_markup: {
         inline_keyboard: TIME_BUTTONS,
       },
