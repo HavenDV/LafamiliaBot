@@ -66,7 +66,12 @@ export async function POST(req: NextRequest) {
 
   if (msg && (isDirectMention || isReplyToBot)) {
     try {
-      const joke = await OpenAIUtils.generateJoke(msg.text ?? "");
+      const promptText =
+        isReplyToBot && msg.reply_to_message?.text
+          ? `Сообщение бота: ${msg.reply_to_message.text}\nОтвет игрока: ${msg.text}`
+          : msg.text ?? "";
+
+      const joke = await OpenAIUtils.generateJoke(promptText);
 
       await TelegramAPI.sendMessage({
         chat_id: msg.chat.id,
