@@ -5,6 +5,7 @@ export type {
   SendMessageParams,
   EditMessageParams,
   AnswerCallbackQueryParams,
+  PinMessageParams,
 } from "./api";
 
 export {

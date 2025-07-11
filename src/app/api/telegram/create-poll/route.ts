@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import {
   TelegramAPI,
+  type TelegramResponse,
   TIME_BUTTONS,
   VOTING_MESSAGE_TEMPLATE,
   MessageUtils,
@@ -22,6 +23,20 @@ export async function GET() {
       },
     });
 
+    // NEW CODE: Pin the sent message to the chat if successful
+    let pinResult: TelegramResponse | null = null;
+    if (result.ok && result.result?.message_id) {
+      pinResult = await TelegramAPI.pinChatMessage({
+        chat_id: process.env.CHAT_ID!,
+        message_id: result.result.message_id,
+        disable_notification: true,
+      });
+
+      if (!pinResult.ok) {
+        console.error("Failed to pin message:", pinResult);
+      }
+    }
+
     if (!result.ok) {
       console.error("Telegram API error:", result);
       return NextResponse.json(
@@ -35,6 +50,7 @@ export async function GET() {
       success: true,
       message_id: result.result?.message_id,
       time: timeString,
+      pinned: pinResult?.ok ?? false,
     });
   } catch (error) {
     console.error("Error in cron job:", error);

@@ -40,6 +40,13 @@ export interface AnswerCallbackQueryParams {
   text?: string;
 }
 
+// NEW CODE: parameters for pinChatMessage
+export interface PinMessageParams {
+  chat_id: string | number;
+  message_id: number;
+  disable_notification?: boolean;
+}
+
 export class TelegramAPI {
   private static get botToken(): string {
     const token = process.env.TELEGRAM_BOT_TOKEN;
@@ -81,6 +88,19 @@ export class TelegramAPI {
     params: AnswerCallbackQueryParams
   ): Promise<TelegramResponse> {
     const response = await fetch(`${this.baseUrl}/answerCallbackQuery`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(params),
+    });
+
+    return response.json();
+  }
+
+  // NEW CODE: pinChatMessage method
+  static async pinChatMessage(
+    params: PinMessageParams
+  ): Promise<TelegramResponse> {
+    const response = await fetch(`${this.baseUrl}/pinChatMessage`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(params),
