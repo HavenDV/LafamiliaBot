@@ -64,6 +64,11 @@ export async function POST(req: NextRequest) {
     msg?.reply_to_message?.from?.username === "lafamilias_bot" ||
     msg?.reply_to_message?.via_bot?.username === "lafamilias_bot";
 
+  // Do not reply to a pinned message
+  if (msg?.pinned_message) {
+    return NextResponse.json({ ok: true });
+  }
+
   if (msg && (isDirectMention || isReplyToBot)) {
     try {
       const promptText =
