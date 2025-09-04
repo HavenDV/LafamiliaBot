@@ -62,8 +62,10 @@ export class MessageUtils {
     // Parse existing registrations
     for (const line of existingLines) {
       if (line.trim()) {
-        // Match patterns like "👤 <a href=...>@nick</a> (Время: 20:30)" or "👤 @nick (Время: 20:30)"
-        const timeMatch = line.match(/^(?:👤\s*)?(.+?)\s*\(Время:\s*(.+?)\)$/);
+        // Match patterns like "1. 👤 <a href=...>@nick</a> (Время: 20:30)", "1) 👤 @nick (Время: 20:30)", or without number prefix
+        const timeMatch = line.match(
+          /^\s*(?:\d+[).]?\s*)?(?:👤\s*)?(.+?)\s*\(Время:\s*(.+?)\)$/
+        );
         if (timeMatch) {
           const [, rawName, time] = timeMatch;
           const key = this.normalizeName(rawName.trim());
@@ -103,8 +105,10 @@ export class MessageUtils {
 
     if (registrations.size > 0) {
       updatedMessage += "\n";
+      let index = 0;
       for (const { displayName, time } of registrations.values()) {
-        updatedMessage += `\n👤 ${displayName} (Время: ${time})`;
+        index += 1;
+        updatedMessage += `\n${index}. 👤 ${displayName} (Время: ${time})`;
       }
     }
 
