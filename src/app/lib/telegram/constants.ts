@@ -1,4 +1,6 @@
 // Telegram voting constants
+export const REGISTRATION_SECTION_HEADER = "Сегодня с нами:";
+
 export const TIME_BUTTONS = [
   [
     { text: "19:00", callback_data: "time_19:00" },
@@ -18,7 +20,7 @@ export const TIME_BUTTONS = [
   [{ text: "Не приду", callback_data: "time_not_coming" }],
 ];
 
-export const VOTING_MESSAGE_TEMPLATE = `🎭 <b>Вечерняя Мафия</b> 🎭
+export const VOTING_MESSAGE_TEMPLATE = `🎭 Вечерняя Мафия 🎭
 
 Друзья, всех приветствую! 🎉
 
@@ -26,13 +28,13 @@ export const VOTING_MESSAGE_TEMPLATE = `🎭 <b>Вечерняя Мафия</b> 
 
 Если вы новичок — не переживайте, всему научим! 😉
 
-🕰️ <b>Время</b>: с 19:00 до 01:00
-📍 <b>Место</b>: Gashisha lounge
+🕰️ Время: с 19:00 до 02:00
+📍 Место: Vesna lounge
 🅿️ Valet parking
 
 Для участия нажмите на удобное вам время ниже ⏰
 
-Сегодня с нами:`;
+${REGISTRATION_SECTION_HEADER}`;
 
 export const CALLBACK_MESSAGES = {
   NOT_COMING: "Жаль, что не сможете прийти!",

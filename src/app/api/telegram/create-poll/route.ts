@@ -3,8 +3,8 @@ import {
   TelegramAPI,
   type TelegramResponse,
   TIME_BUTTONS,
-  VOTING_MESSAGE_TEMPLATE,
   MessageUtils,
+  getVotingMessageTemplate,
 } from "@/app/lib/telegram";
 
 export const runtime = "edge";
@@ -12,10 +12,11 @@ export const runtime = "edge";
 export async function GET() {
   try {
     const timeString = MessageUtils.getCurrentMoscowTime();
+    const votingMessageTemplate = await getVotingMessageTemplate();
 
     const result = await TelegramAPI.sendMessage({
       chat_id: process.env.CHAT_ID!,
-      text: VOTING_MESSAGE_TEMPLATE,
+      text: votingMessageTemplate,
       parse_mode: "HTML",
       disable_web_page_preview: true,
       reply_markup: {

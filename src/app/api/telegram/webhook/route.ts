@@ -8,6 +8,8 @@ import {
   TIME_BUTTONS,
   CALLBACK_MESSAGES,
   MessageUtils,
+  executeVotingAdminCommand,
+  parseVotingAdminCommand,
 } from "@/app/lib/telegram";
 import { OpenAIUtils } from "@/app/lib/openai";
 
@@ -66,6 +68,30 @@ export async function POST(req: NextRequest) {
 
   // Do not reply to a pinned message
   if (msg?.pinned_message) {
+    return NextResponse.json({ ok: true });
+  }
+
+  const adminCommand = parseVotingAdminCommand(msg?.text);
+  if (msg && adminCommand) {
+    let responseText: string;
+
+    try {
+      responseText = await executeVotingAdminCommand(
+        adminCommand,
+        msg.from?.id
+      );
+    } catch (err) {
+      console.error("Admin command failed", err);
+      responseText = "Не удалось выполнить админ-команду. Проверьте настройки бота.";
+    }
+
+    await TelegramAPI.sendMessage({
+      chat_id: msg.chat.id,
+      text: responseText,
+      reply_to_message_id: msg.message_id,
+      disable_web_page_preview: true,
+    });
+
     return NextResponse.json({ ok: true });
   }
 

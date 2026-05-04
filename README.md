@@ -44,7 +44,47 @@ Create a `.env.local` file with:
 TELEGRAM_BOT_TOKEN=123456789:ABC-DEF1234ghIkl-zyx57W2v1u123ew11
 CHAT_ID=-1001234567890
 OPENAI_API_KEY=sk-your-openai-api-key-here
+# Optional: enables dashboard-editable voting message templates
+EDGE_CONFIG=https://edge-config.vercel.com/...
+# Optional: enables Telegram admin commands for template edits
+ADMIN_USER_IDS=123456789,987654321
+VERCEL_API_TOKEN=vercel-api-token-with-edge-config-access
+# Optional if the ID cannot be derived from EDGE_CONFIG
+EDGE_CONFIG_ID=ecfg_...
+# Optional for team-scoped Edge Config stores
+VERCEL_TEAM_ID=team_...
 ```
+
+### Editable Voting Message
+
+The daily voting message can be edited without a code deploy by using Vercel Edge Config:
+
+1. Create an Edge Config store in the Vercel dashboard and connect it to this project.
+2. Add a string item with key `votingMessageTemplate`.
+3. Paste the full Telegram message text as the value.
+4. Keep the final line as `Сегодня с нами:` because registrations are appended below it.
+
+If `EDGE_CONFIG` is missing, the key is missing, or the value does not end with `Сегодня с нами:`, the bot uses the bundled template from the repository.
+
+On Vercel Hobby, this is intended to stay within the free allowance for normal daily-poll usage because the cron route reads one Edge Config item per poll.
+
+### Telegram Admin Commands
+
+Set `ADMIN_USER_IDS` to a comma-separated list of Telegram user IDs that are allowed to manage bot settings from the group. If this variable is missing, nobody can run admin commands.
+
+Supported commands:
+
+```text
+/template_help
+/template_preview
+/template_set
+<full new voting message>
+/template_reset
+```
+
+`/template_set` saves the message to Edge Config using the key `votingMessageTemplate`. The final line must be `Сегодня с нами:` so player registrations can be appended below it.
+
+Admin writes require `EDGE_CONFIG` plus a Vercel API token in `VERCEL_API_TOKEN` or `VERCEL_TOKEN`. If `EDGE_CONFIG_ID` is not set, the bot tries to derive it from `EDGE_CONFIG`.
 
 ### Development
 
@@ -54,6 +94,16 @@ npm run dev
 ```
 
 The bot webhook will be available at `http://localhost:3000/api/telegram/webhook`
+
+### Checks
+
+```bash
+npm run lint
+npm test
+npm run preview:voting-message
+```
+
+`preview:voting-message` prints the template the cron route would use. If `EDGE_CONFIG` is configured locally, it previews the Edge Config value; otherwise it previews the bundled fallback.
 
 ### Production Deployment
 

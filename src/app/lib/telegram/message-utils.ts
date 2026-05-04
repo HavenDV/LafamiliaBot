@@ -1,4 +1,5 @@
 // Message formatting utilities
+import { REGISTRATION_SECTION_HEADER } from "./constants";
 
 export interface UserRegistration {
   userName: string;
@@ -17,7 +18,7 @@ export class MessageUtils {
     // Split the message into parts
     const lines = currentText.split("\n");
     const baseMessageEndIndex = lines.findIndex((line) =>
-      line.includes("Сегодня с нами:")
+      line.includes(REGISTRATION_SECTION_HEADER)
     );
 
     if (baseMessageEndIndex === -1) {
@@ -121,7 +122,7 @@ export class MessageUtils {
   static getRegisteredUsers(messageText: string): UserRegistration[] {
     const lines = messageText.split("\n");
     const baseMessageEndIndex = lines.findIndex((line) =>
-      line.includes("Сегодня с нами:")
+      line.includes(REGISTRATION_SECTION_HEADER)
     );
 
     if (baseMessageEndIndex === -1) {
